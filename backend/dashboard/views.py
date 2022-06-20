@@ -191,7 +191,7 @@ class OceanAnswersView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.
     serializer_class = OceanAnswerSerializer
 
     def get_queryset(self):
-        user_pro = UserProfile.objects.get(sap_id=self.kwargs['sap'])
+        user_pro = UserProfile.objects.get(pk=self.kwargs['user_id'])
         return OceanAnswer.objects.filter(user=user_pro)
     
     def get(self, request, *args, **kwargs):
