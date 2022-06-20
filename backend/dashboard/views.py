@@ -17,11 +17,94 @@ from rest_framework import status
 from rest_framework import generics
 
 
-class GroupApi(generics.ListCreateAPIView):
+class GroupApi(generics.CreateAPIView):
     queryset=Group.objects.all()
     serializer_class=GroupSerializer
+    
 
+class GroupChangeAPI(APIView):
+    def get_object(self, pk):
+        try:
+            return Group.objects.get(pk=pk)
+        except Group.DoesNotExist:
+            raise Http404
 
+    def get(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = GroupSerializer(snippet)
+        return Response(serializer.data)
+"""
+    def put(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = GroupSerializer(snippet, data=request.data)
+        if serializer.is_valid():
+            #print(request.data['group_individual'])
+            serializer.save()
+            #print(request.data)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+"""
+
+class AllEventsForGroupChangeAPI(APIView):
+    def get_object(self, pk):
+        try:
+            return AllEventsForGroup.objects.get(pk=pk)
+        except Group.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = AllEventsForGroupSerializer(snippet)
+        return Response(serializer.data)
+"""
+    def put(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = AllEventsForGroupSerializer(snippet, data=request.data)
+        if serializer.is_valid():
+            #print(request.data['group_individual'])
+            serializer.save()
+            #print(request.data)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+"""
+
+class AllEventsForUserChangeAPI(APIView):
+    def get_object(self, pk):
+        try:
+            return AllEventsForUser.objects.get(pk=pk)
+        except Group.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = AllEventsForUserSerializer(snippet)
+        return Response(serializer.data)
+"""
+    def put(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = AllEventsForUserSerializer(snippet, data=request.data)
+        if serializer.is_valid():
+            #print(request.data['group_individual'])
+            serializer.save()
+            #print(request.data)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+"""
 class EventsApi(generics.ListCreateAPIView):
     queryset=Event.objects.all()
     serializer_class=EventsSerializer
@@ -66,8 +149,8 @@ class EventRegisterationsAPI(generics.ListCreateAPIView):
             # TO GET CURRENT EVENT REGISTERATION
             curr_er=EventRegisteration.objects.get(er_id=serializer.data['er_id'])
             # TO GET CURRENT USER
-            curr_user_id=serializer.data['us_id']
-            curr_user=MyUser.objects.get(user_id=int(curr_user_id))
+            curr_user_id=serializer.data['sap_id']
+            curr_user=UserProfile.objects.get(sap_id=int(curr_user_id))
             # SETTING USER IN THE MODEL
             curr_er.user=curr_user
             # TO GET THE GRP NAME
@@ -108,7 +191,7 @@ class OceanAnswersView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.
     serializer_class = OceanAnswerSerializer
 
     def get_queryset(self):
-        user_pro = UserProfile.objects.get(pk=self.kwargs['user_id'])
+        user_pro = UserProfile.objects.get(sap_id=self.kwargs['sap'])
         return OceanAnswer.objects.filter(user=user_pro)
     
     def get(self, request, *args, **kwargs):
@@ -130,7 +213,7 @@ class InterestAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gener
     serializer_class = InterestSerializer
     
     def get_queryset(self):
-        user_pro = UserProfile.objects.get(pk=self.kwargs['user_id'])
+        user_pro = UserProfile.objects.get(sap_id=self.kwargs['sap'])
         return Interest.objects.filter(user = user_pro)
     
     def get(self, request, *args, **kwargs):
@@ -138,7 +221,7 @@ class InterestAPI(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gener
 
     def post(self, request, *args, **kwargs):
         names = request.data['name']
-        user_pro = UserProfile.objects.get(pk=self.kwargs['user_id'])
+        user_pro = UserProfile.objects.get(sap_id=self.kwargs['sap'])
         for name in names:
             interest = Interest(user=user_pro, name=name)
             interest.save()
