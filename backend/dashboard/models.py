@@ -53,7 +53,7 @@ class UserProfile(models.Model):
     sap_id          = models.CharField(max_length=12,blank=True,null=True)
     mobile_no       = PhoneNumberField(null=False,blank=False,unique=True)
     profile_pic     = models.ImageField(upload_to=PathAndRename('profile/'),default='profile/default.jpg')
-    barcode         = models.ImageField(upload_to=PathAndRename('barcode/'),blank=True)
+    barcode         = models.ImageField(upload_to=PathAndRename('barcode/'),blank=True,null=True)
     bio             = models.TextField()
     
     def __str__(self):
@@ -67,11 +67,12 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 @receiver(post_save, sender = UserProfile)
 def verify_student(sender,instance,created,*args,**kwargs):
-    img = Image.open("media/barcode/{}{}{}.jpeg".format(instance.first_name,instance.last_name,instance.year_of_passing))
-    b=str(decode(img)[0][0])[3:14]
-    if instance.sap_id!=b:
-        instance.sap_id=b
-        instance.save()
+    if instance.sap_id==None:
+        img = Image.open("media/barcode/{}{}{}.jpeg".format(instance.first_name,instance.last_name,instance.year_of_passing))
+        b=str(decode(img)[0][0])[3:14]
+        if instance.sap_id!=b:
+            instance.sap_id=b
+            instance.save()
 
 
 class Interest(models.Model):
@@ -112,6 +113,7 @@ class Group(models.Model):
         return self.group_name
 
 
+
 class Event(models.Model):
     event_id= models.AutoField(primary_key=True)
     event_name= models.CharField(max_length=255, blank=False, unique= True)
@@ -140,8 +142,7 @@ class EventRegisteration(models.Model):
     eve_id=models.IntegerField(blank=True)
     event= models.ForeignKey(Event,null=True,blank=True,on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.grp_name
+    
 
 class AllEventsForGroup(models.Model):
     AEFG_id= models.AutoField(primary_key=True)
@@ -157,7 +158,7 @@ class AllEventsForUser(models.Model):
     group_events= models.ManyToManyField(Event)
 
     def __str__(self):
-        return self.user_name.email
+        return self.user_name.first_name + self.user_name.last_name
 
 class UserGroupRequest(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
@@ -169,14 +170,14 @@ class UserGroupRequest(models.Model):
 
 
 
-# @receiver(post_save, sender =Group)
-# def create_AEFG(sender,instance = None, created = False, **kwargs):
-#     if created:
-#         AllEventsForGroup.objects.create(group_name=instance)
+@receiver(post_save, sender =Group)
+def create_AEFG(sender,instance = None, created = False, **kwargs):
+    if created:
+        AllEventsForGroup.objects.create(group_name=instance)
 
 
-# @receiver(post_save, sender =MyUser)
-# def create_AEFU(sender,instance = None, created = False, **kwargs):
-#     if created:
-#         up_inst = UserProfile.objects.get(user=instance)
-#         AllEventsForUser.objects.create(user_name=up_inst)
+@receiver(post_save, sender =UserProfile)
+def create_AEFU(sender,instance = None, created = False, **kwargs):
+    if created:
+        AllEventsForUser.objects.create(user_name=instance)
+

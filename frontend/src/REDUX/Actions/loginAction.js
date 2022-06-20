@@ -29,7 +29,9 @@ export const login = (email, password) => async (dispatch) => {
     });
     localStorage.setItem("loginToken", JSON.stringify(data.token));
     localStorage.setItem("user_id", JSON.stringify(data.user_id));
-    
+    if(data.userProf_id){
+      localStorage.setItem("userProf_id",JSON.stringify(data.userProf_id));
+    }
   } catch (error) {
     // console.log("fef");
     dispatch({
