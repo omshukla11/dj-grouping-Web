@@ -57,7 +57,12 @@ export default function Login() {
         icon: "success",
         title: "Login Successful!",
       });
-      navigate("/createpfp");
+      if(localStorage.getItem("userProf_id")!=null){
+        navigate("/groupformed")
+      }
+      else{
+        navigate("/createpfp");
+      } 
     }
   }, [userLogin, navigate]);
 
