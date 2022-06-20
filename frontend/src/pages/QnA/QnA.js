@@ -26,13 +26,13 @@ const QnA = () => {
         console.log(err)
       })
   }, [])
-  console.log(Questions);
+  console.log(typeof(Questions));
   console.log(Answers);
 
   const answerReq = () => {
     Answers.map(ans => {
       console.log(ans);
-      axios.post(`https://omshukla.pythonanywhere.com/dashboard/oceanans/60004200072/`,ans)
+      axios.post(`https://omshukla.pythonanywhere.com/dashboard/oceanans/${localStorage.getItem("userProf_id")}/`,ans)
         .then(res => {
           console.log(res.data);
         })

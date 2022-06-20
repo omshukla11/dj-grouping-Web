@@ -9,15 +9,14 @@ export const GroupFormedAction = () => async (dispatch) => {
             type: GROUP_VIEW_REQUEST
         })
 
-        axios.get(`http://omshukla.pythonanywhere.com/dashboard/alluserreq/${user_id}/`)
-            .then((res) => {
-                console.log(res);
+        const { data } = await axios.get(`http://omshukla.pythonanywhere.com/dashboard/alluserreq/${user_id}/`);
 
-                dispatch({
-                    type: GROUP_VIEW_SUCCESS,
-                    payload: res.data
-                })
-            })
+        console.log(data);
+        dispatch({
+            type: GROUP_VIEW_SUCCESS,
+            payload: data
+        })
+            
     }
     catch (error) {
         dispatch({

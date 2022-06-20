@@ -8,32 +8,36 @@ var axios = require('axios');
 var FormData = require('form-data');
 
 const GroupFormed = () => {
-
+    var groups = [];
+    
     const dispatch = useDispatch();
     const GroupFormed = useSelector((state) => state.GroupFormed);
-    const [groups, setG] = useState([
-        {
-            group_name: "No Group",
-            group_id: "0",
-            group_desc: "",
-            group_members: 0,
-            group_picture: "",
-        },
-    ]);
     const { loading, error, GroupFormedData } = GroupFormed;
-    const [k, setk] = useState(0);
-    console.log(GroupFormed.GroupFormedData);
+    const [data, setData] = useState([]);
+    console.log(typeof(GroupFormedData));
     useEffect(() => {
-        dispatch(GroupFormedAction());
-        console.log(groups.length);
-        setG(GroupFormedData);
-        console.log(groups.length);
-        console.log(groups);
-        setk(groups.length);
-    }, [dispatch]);
+        axios.get(`http://omshukla.pythonanywhere.com/dashboard/alluserreq/${localStorage.getItem("userProf_id")}/`)
+            .then(res => {
+                console.log(res.data)
+                const req = (res.data)
+                req.map(r => {
+                    axios.get(`http://omshukla.pythonanywhere.com/dashboard/group/${r.group}/`)
+                        .then(res => {
+                            groups.push(res.data);
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        })
+                })
+                setData(groups)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }, []);
+    console.log(data);
 
-    var user_id = localStorage.getItem("user_id")
-
+    var user_id = localStorage.getItem("userProf_id");
     const groupAR = (ans, g) => {
         var data = new FormData();
         data.append('join', ans);
@@ -41,7 +45,7 @@ const GroupFormed = () => {
         data.append('group', g);
         var config = {
             method: 'post',
-            url: 'http://omshukla.pythonanywhere.com​/dashboard/groupreq/',
+            url: 'http://omshukla.pythonanywhere.com/dashboard/groupreq/',
             headers: {
                 ...data.getHeaders()
             },
@@ -63,7 +67,7 @@ const GroupFormed = () => {
             <Grid spacing={{ xs: 2, md: 3 }} container className='GroupMain'>
                 {loading ? <div>No Groups Available</div>
                     :
-                    GroupFormedData.map((x) => {
+                    data.map((x) => {
                         return <Grid item key={x.group_id} xs={12} sm={6} md={3} className='innerGroupGrid'>
                             <Card >
                                 <center>
@@ -77,7 +81,6 @@ const GroupFormed = () => {
                             <Button variant='contained' color='error' className='groupButton' onClick={() => groupAR(false, x.group_id)}>Decline</Button>
                         </Grid>
                     })}
-
             </Grid>
         </div>
     )
