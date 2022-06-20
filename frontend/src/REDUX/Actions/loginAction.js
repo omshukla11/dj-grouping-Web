@@ -22,6 +22,7 @@ export const login = (email, password) => async (dispatch) => {
         config
       )
       .then((res) => {
+        console.log(res)
          if (res.data.token) {
           console.log(res.data.token);
           dispatch({

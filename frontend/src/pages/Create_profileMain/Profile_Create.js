@@ -53,7 +53,7 @@ const apireq = (rawdata) => {
   .then((res) => {
     console.log(res.data);
     localStorage.setItem("name", JSON.stringify(res.data.first_name));
-    localStorage.setItem("user_id", JSON.stringify(res.data.id));
+    localStorage.setItem("userProf_id", JSON.stringify(res.data.id));
   });
 }
 
@@ -190,7 +190,7 @@ const Profile_Create = () => {
                           type='file'
                           onChange={(e) => { 
                             console.log(e.target.files[0]);
-                            setNotes(e.target.files[0]) }}
+                            setNotes(e.target.files[0])}}
                           placeholder="barcode"
                         />
                       </Grid>

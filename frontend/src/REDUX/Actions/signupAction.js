@@ -22,6 +22,7 @@ export const signup = (email, password) => async (dispatch) => {
         config
       )
       .then((res) => {
+        console.log(res)
         if (res.data.email) {
           console.log(res.data.email);
           dispatch({

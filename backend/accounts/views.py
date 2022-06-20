@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.sites.shortcuts import get_current_site
+from dashboard.models import UserProfile
 from .models import MyUser
 from .serializers import *
 from .utils import Util
@@ -80,4 +81,9 @@ class LoginView(generics.CreateAPIView):
             data['email'] = user.email
             data['token'] = token
             data['user_id']=user.user_id
-            return Response(data, status = status.HTTP_200_OK)
+            try:
+                userProf = UserProfile.objects.get(user=user)
+                data['userProf_id']=userProf.pk
+                return Response(data, status = status.HTTP_200_OK)
+            except:
+                return Response(data, status = status.HTTP_200_OK)
